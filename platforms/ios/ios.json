@@ -1,0 +1,43 @@
+{
+    "prepare_queue": {
+        "installed": [],
+        "uninstalled": []
+    },
+    "config_munge": {
+        "files": {
+            "config.xml": {
+                "parents": {
+                    "/*": [
+                        {
+                            "xml": "<feature name=\"WikitudePlugin\"><param name=\"ios-package\" value=\"WTWikitudePlugin\" /></feature>",
+                            "count": 1
+                        }
+                    ]
+                }
+            }
+        }
+    },
+    "installed_plugins": {
+        "cordova-plugin-whitelist": {
+            "PACKAGE_NAME": "be.kuleuven.icts.anyplace"
+        },
+        "com.wikitude.phonegap.WikitudePlugin": {
+            "PACKAGE_NAME": "be.kuleuven.icts.anyplace"
+        }
+    },
+    "dependent_plugins": {},
+    "modules": [
+        {
+            "id": "com.wikitude.phonegap.WikitudePlugin.WikitudePlugin",
+            "file": "plugins/com.wikitude.phonegap.WikitudePlugin/www/WikitudePlugin.js",
+            "pluginId": "com.wikitude.phonegap.WikitudePlugin",
+            "clobbers": [
+                "WikitudePlugin"
+            ]
+        }
+    ],
+    "plugin_metadata": {
+        "cordova-plugin-whitelist": "1.3.2",
+        "com.wikitude.phonegap.WikitudePlugin": "6.1.0"
+    }
+}

@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html ng-app="anyViewer">
+<head>
+    <meta charset="utf-8" />
+    <meta name="format-detection" content="telephone=no" />
+    <meta name="viewport"
+          content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=device-dpi" />
+    <link rel="stylesheet" type="text/css" href="css/index.css" />
+
+    <script type="text/javascript"
+            src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBCRLbtsuuKx5cdY2ydiri2r4ji3FTYdbY&libraries=places">
+    </script>
+
+    <script src="bower_components/jquery/dist/jquery.min.js"></script>
+    <script src="bower_components/jquery-ui/jquery-ui.min.js"></script>
+
+    <link href="bower_components/jquery-ui/themes/base/all.css" rel="stylesheet"
+          type="text/css"/>
+    <link href="bower_components/bootstrap/dist/css/bootstrap.css" rel="stylesheet" type="text/css"/>
+    <link href="bower_components/fontawesome/css/font-awesome.css" rel="stylesheet" type="text/css"/>
+
+    <script type="text/javascript" src="libs/markerclusterer.js"></script>
+
+    <script type="text/javascript" src="bower_components/angular/angular.min.js"></script>
+    <script type="text/javascript" src="bower_components/angular-route/angular-route.min.js"></script>
+
+    <script src="bower_components/angular-ui-select/dist/select.js"></script>
+    <script src="bower_components/angular-sanitize/angular-sanitize.min.js"></script>
+
+    <link rel="stylesheet" type="text/css" href="bower_components/angular-ui-select/dist/select.css"/>
+    <link rel="stylesheet" href="bower_components/select2/select2.css">
+
+    <!-- Must come after jquery/ui imports -->
+    <script type="text/javascript" src="bower_components/jqueryui-touch-punch/jquery.ui.touch-punch.min.js"></script>
+
+    <title>Anyplace Viewer</title>
+
+    <script type="text/javascript" src="bower_components/angular-bootstrap/ui-bootstrap.min.js"></script>
+    <script type="text/javascript" src="bower_components/angular-bootstrap/ui-bootstrap-tpls.min.js"></script>
+
+    <script type="text/javascript" src="bower_components/angular-loading-bar/src/loading-bar.js"></script>
+    <link rel="stylesheet" href="bower_components/angular-loading-bar/src/loading-bar.css">
+
+    <script type="text/javascript" src="build/js/anyplace.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="build/css/anyplace.min.css"/>
+
+    <meta name="msapplication-tap-highlight" content="no" />
+    <title>Hello World</title>
+</head>
+
+<body>
+<div id="control-bar" class="box-shadow-1 ng-cloak" ng-controller="ControlBarController as ctrlBarCtrl" ng-cloak>
+
+    <div class="col-md-12" style="margin-top: 5px; margin-bottom: 5px;">
+        <img src="img/logo.svg"/>
+        <a class="btn btn-primary pull-right" href="javascript:app.loadExampleARchitectWorld(getSamplePath(5, 2));">Augment me!</a>
+    </div>
+
+    <div class="container-fluid" id="gray-bg">
+
+        <div class="col-md-1 col-sm-2 col-xs-2 " id="div-logo">
+            <img style="width: 75px; height: auto" src="build/images/anyplace_logo_text_white.png"/>
+        </div>
+
+        <!-- BUILDINGS -->
+        <div ng-hide="anyService.selectedBuilding" class="col-md-8 col-sm-7 col-xs-10" id="ctrl-bar-buildings"
+             ng-controller="BuildingController as buildingCtrl">
+            <div class="bold-f" style="color:transparent; pointer-events:none;">_</div>
+
+            <ui-select ng-model="anyService.selectedBuilding" theme="bootstrap" ng-disabled="disabled">
+                <ui-select-match placeholder="Select a Building...">{{$select.selected.name}}</ui-select-match>
+                <ui-select-choices
+                        repeat="b in myBuildings | orderBy : orderByDistCentre | propsFilter: { name: $select.search, description: $select.search }">
+                    <div ng-bind-html="b.name | highlight: $select.search"></div>
+                    <small>
+                        {{b.description}}
+                    </small>
+                </ui-select-choices>
+            </ui-select>
+
+        </div>
+
+        <!-- FLOORS -->
+        <div ng-show="false" id="ctrl-bar-floors" ng-controller="FloorController as floorCtrl">
+        </div>
+
+        <!-- POIS -->
+        <div ng-show="anyService.selectedBuilding" class="col-md-8 col-sm-7 col-xs-10" id="ctrl-bar-pois"
+             ng-controller="PoiController as poiCtrl"
+             ng-show="anyService.selectedBuilding !== undefined && anyService.selectedBuilding !== null && anyService.selectedFloor !== undefined && anyService.selectedFloor !== null">
+            <div class="bold-f one-line-wrap-div">
+                <button ng-click="unselectBuilding()" id="change-building-btn" class="btn btn-primary"
+                        style="padding: 3px 6px; margin-bottom: 3px; outline-style: none">
+                    <span class="glyphicon glyphicon-remove" id="change-building-box"></span>
+                </button>
+                <span id="clear-routes-box" ng-click="clearNavPolylines()"
+                      ng-show="navRoutesShown()"> (Clear Routes)</span>
+                {{anyService.selectedBuilding.name}}:
+            </div>
+
+            <ui-select ng-model="anyService.selectedPoi" theme="bootstrap" ng-disabled="disabled">
+                <ui-select-match placeholder="Select a Point of Interest..."><b>[ {{$select.selected.floor_number}}
+                    ]</b> : {{$select.selected.name}} | {{$select.selected.description | limitTo : 40}}{{$select.selected.description.length > 40 ? '...' : ''}}
+                </ui-select-match>
+                <ui-select-choices
+                        repeat="p in myPois | filter : { pois_type : '!None' } | propsFilter: { name: $select.search, description: $select.search, floor_number: $select.search } | orderBy : orderByFloor">
+                    <div ng-bind-html="'['+ p.floor_number +'] : ' + p.name + ' | ' + p.description | highlight: $select.search"></div>
+                </ui-select-choices>
+            </ui-select>
+
+        </div>
+
+        <div class="col-md-2 col-sm-1 col-xs-2" id="more-menu">
+            <div class="bold-f" style="color:transparent; pointer-events:none;"
+                 ng-style="{ 'height' : (anyService.selectedBuilding?'2em':null)}">_
+            </div>
+            <div ng-controller="DropDownCtrl">
+
+                <!-- Single button -->
+                <div class="btn-group" dropdown is-open="status.isopen">
+                    <button type="button" class="btn btn-primary dropdown-toggle" dropdown-toggle>
+                        <span
+                                class="glyphicon glyphicon-menu-hamburger"> </span>
+                        <!--</span><span class="caret"></span>-->
+                    </button>
+                    <ul id="dropdown-ham-menu" class="dropdown-menu" role="menu">
+                        <li style="text-align: center;">
+                            <a href="//anyplace.cs.ucy.ac.cy" target="_blank">
+                                <div class="div-logo-menu">
+                                    <img style="width: 75px; height: auto" src="build/images/anyplace_logo_text.png"/>
+                                </div>
+                            </a>
+                        </li>
+                        <li><a href="http://anyplace.cs.ucy.ac.cy/architect" target="_blank">Add Venue</a></li>
+                        <li><a href="https://play.google.com/store/apps/details?id=com.dmsl.anyplace" target="_blank">Anyplace
+                            Navigator</a></li>
+                        <li><a href="http://anyplace.cs.ucy.ac.cy" target="_blank">About</a></li>
+                        <li><a href="http://anyplace.cs.ucy.ac.cy#contact" target="_blank">Contact</a></li>
+                        <li><a href="http://anyplace.cs.ucy.ac.cy/tos" target="_blank">Terms</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div id="notification_panel" ng-controller="AlertController as alertCtrl"
+         ng-show="alerts.length || anyService.isLoading">
+        <alert ng-repeat="alert in alerts" type="{{alert.type}}" close="anyService.closeAlert($index)">
+            {{alert.msg}}
+        </alert>
+    </div>
+</div>
+
+<div id="map-canvas"></div>
+
+<div id="floor-controls">
+    <div id="DIV_1" ng-show="anyService.selectedBuilding" class="ng-cloak" ng-cloak>
+        <span ng-click="floorUp()" title="Level up" id="A_2">
+            <i class="fa fa-building"></i>
+            <i class="fa fa-caret-up"></i>
+        </span>
+        <a id="A_5">
+            <select id="floor-select-list" ng-model="anyService.selectedFloor"
+                    style="border: none; outline-style: none; width: 45px; font-size: 15px; background-color: white; padding-left: 5px;"
+                    ng-options="floor.floor_number for floor in xFloors | orderBy:orderByFloorNo"
+                    title="Floors">
+            </select>
+        </a>
+        <span ng-click="floorDown()" title="Level Down" id="A_6">
+            <i class="fa fa-building"></i>
+            <i class="fa fa-caret-down"></i>
+        </span>
+    </div>
+</div>
+
+<div id="my-loc-control" class="ng-cloak" ng-cloak>
+
+    <div ng-show="anyService.selectedBuilding" ng-click="centerViewToSelectedItem()"
+         class="center-view-box-parent box-shadow-1">
+        <div id="center-view-box">
+            <span>
+                <img width="25" height="25" src="build/images/any-bullseye.png">
+            </span>
+        </div>
+    </div>
+
+    <div ng-click="showUserLocation()" class="find-me-box-parent box-shadow-1">
+        <div id="find-me-box">
+            <span>
+                <img ng-show="getIsUserLocVisible()" width="25" height="25" src="build/images/html5-location-blue.png">
+                <img ng-hide="getIsUserLocVisible()" width="25" height="25" src="build/images/html5-location-grey.png">
+            </span>
+        </div>
+    </div>
+
+    <div ng-show="getIsUserLocVisible()" ng-click="panToUserLocation()" class="pan-find-me-box-parent box-shadow-1">
+        <div id="pan-find-me-box">
+            <span>
+                <img width="25" height="25" src="build/images/bullseye.png">
+            </span>
+        </div>
+    </div>
+
+</div>
+
+<script type="text/javascript" src="cordova.js"></script>
+<script type="text/javascript" src="js/index.js"></script>
+<script type="text/javascript" src="js/sampleIndices.js"></script>
+
+</body>
+
+<footer>
+
+    <link href="https://fonts.googleapis.com/css?family=Lato:400,700,900,400italic,700italic,900italic" rel="stylesheet"
+          type="text/css">
+
+</footer>
+
+</html>
