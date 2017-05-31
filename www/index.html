@@ -41,8 +41,8 @@
     <script type="text/javascript" src="bower_components/angular-loading-bar/src/loading-bar.js"></script>
     <link rel="stylesheet" href="bower_components/angular-loading-bar/src/loading-bar.css">
 
-    <script type="text/javascript" src="build/js/anyplace.min.js"></script>
-    <link rel="stylesheet" type="text/css" href="build/css/anyplace.min.css"/>
+    <script type="text/javascript" src="js/anyplace.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="css/anyplace.min.css"/>
 
     <meta name="msapplication-tap-highlight" content="no" />
     <title>Hello World</title>
@@ -59,7 +59,7 @@
     <div class="container-fluid" id="gray-bg">
 
         <div class="col-md-1 col-sm-2 col-xs-2 " id="div-logo">
-            <img style="width: 75px; height: auto" src="build/images/anyplace_logo_text_white.png"/>
+            <img style="width: 75px; height: auto" src="img/anyplace_logo_text_white.png"/>
         </div>
 
         <!-- BUILDINGS -->
@@ -120,14 +120,14 @@
                 <div class="btn-group" dropdown is-open="status.isopen">
                     <button type="button" class="btn btn-primary dropdown-toggle" dropdown-toggle>
                         <span
-                                class="glyphicon glyphicon-menu-hamburger"> </span>
+                                class="glyphicon glyphicon-menu-hamburger">&#9776;</span>
                         <!--</span><span class="caret"></span>-->
                     </button>
                     <ul id="dropdown-ham-menu" class="dropdown-menu" role="menu">
                         <li style="text-align: center;">
                             <a href="//anyplace.cs.ucy.ac.cy" target="_blank">
                                 <div class="div-logo-menu">
-                                    <img style="width: 75px; height: auto" src="build/images/anyplace_logo_text.png"/>
+                                    <img style="width: 75px; height: auto" src="img/anyplace_logo_text.png"/>
                                 </div>
                             </a>
                         </li>
@@ -180,7 +180,7 @@
          class="center-view-box-parent box-shadow-1">
         <div id="center-view-box">
             <span>
-                <img width="25" height="25" src="build/images/any-bullseye.png">
+                <img width="25" height="25" src="img/any-bullseye.png">
             </span>
         </div>
     </div>
@@ -188,8 +188,8 @@
     <div ng-click="showUserLocation()" class="find-me-box-parent box-shadow-1">
         <div id="find-me-box">
             <span>
-                <img ng-show="getIsUserLocVisible()" width="25" height="25" src="build/images/html5-location-blue.png">
-                <img ng-hide="getIsUserLocVisible()" width="25" height="25" src="build/images/html5-location-grey.png">
+                <img ng-show="getIsUserLocVisible()" width="25" height="25" src="img/html5-location-blue.png">
+                <img ng-hide="getIsUserLocVisible()" width="25" height="25" src="img/html5-location-grey.png">
             </span>
         </div>
     </div>
@@ -197,7 +197,7 @@
     <div ng-show="getIsUserLocVisible()" ng-click="panToUserLocation()" class="pan-find-me-box-parent box-shadow-1">
         <div id="pan-find-me-box">
             <span>
-                <img width="25" height="25" src="build/images/bullseye.png">
+                <img width="25" height="25" src="img/bullseye.png">
             </span>
         </div>
     </div>
